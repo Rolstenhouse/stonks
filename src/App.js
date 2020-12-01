@@ -230,6 +230,11 @@ function App() {
   const [trades, setTrades] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
 
+  const full = window.location.host
+//window.location.host is subdomain.domain.com
+  const parts = full.split('.')
+  const sub = parts[0]
+
   const fetchPortfolio = () => {
     axios.get("https://api.withlaguna.com/stonks/holdings").then((res) => {
       setHoldings(res.data.holdings);
@@ -237,14 +242,16 @@ function App() {
     axios.get("https://api.withlaguna.com/stonks/trades").then((res) => {
       setTrades(res.data.trades);
     });
-    axios.get("https://api.withlaguna.com/stonks/userinfo").then((res) => {
+    axios.get(`https://api.withlaguna.com/stonks/userinfo/${sub}`).then((res) => {
       // setUserInfo(res.data.user);
+      console.log(res.data);
 
       // override userinfo
       setUserInfo({
         title: "Rob's stonks",
         description: "Investing with minimal DD in almost pure tech",
         link: "https://robertolsthoorn.com",
+        owner_id: 1
       });
     });
   };
