@@ -14,7 +14,7 @@ import {
   Typography,
   Link,
   Container,
-  Paper
+  Paper,
 } from "@material-ui/core";
 
 import { createMuiTheme } from "@material-ui/core/styles";
@@ -39,7 +39,7 @@ const toPercentage = (num) => {
 
 const Hero = ({ userInfo }) => {
   return (
-    <div style={{padding: theme.spacing(12)}}>
+    <div style={{ padding: theme.spacing(12) }}>
       <Typography variant="h2">{userInfo.title}</Typography>
       <Typography variant="p1">{userInfo.description}</Typography>
       <Typography variant="d2">
@@ -55,8 +55,10 @@ const Hero = ({ userInfo }) => {
 const HoldingsTable = ({ holdings }) => {
   return (
     <>
-      <Typography align="left" variant="h5">Current holdings</Typography>
-      <Table size="small" style={{paddingBottom: theme.spacing(4)}}>
+      <Typography align="left" variant="h5">
+        Current holdings
+      </Typography>
+      <Table size="small" style={{ paddingBottom: theme.spacing(4) }}>
         <TableHead>
           <TableRow>
             <TableCell>Ticker</TableCell>
@@ -68,7 +70,7 @@ const HoldingsTable = ({ holdings }) => {
         <TableBody>
           {holdings.map((holding) => {
             if (holding.ticker_symbol.includes("CUR:")) {
-              return <></>; 
+              return <></>;
             }
             // Calculate return
             const percentageReturn =
@@ -98,8 +100,13 @@ const SubscribeUpdateForm = ({ userInfo }) => {
     setError(false);
     setSubmitted(true);
     axios
-      .post("")
-      .then((res) => {})
+      .post("https://api.withlaguna.com/submit", {
+        owner_id: userInfo.id,
+        phone: value,
+      })
+      .then((res) => {
+        setSubmitted(true);
+      })
       .catch(() => {
         setSubmitted(false);
         setError(true);
@@ -107,46 +114,65 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   };
 
   return (
-    <Paper style={{padding: theme.spacing(2), margin: theme.spacing(12), backgroundColor: "white"}}>
-    <Typography variant="h6">Get texted as soon Rob makes a trade</Typography>
-    <form style={{display: "flex", justifyContent: "center", alignItems: "center"}}>
-      <TextField
-        id="phone"
-        lable="Phone number"
-        variant="filled"
-        value={value}
-        onChange={(e) => setValue(e.value)}
-        placeholder="555-555-5555"
-        helperText="By submitting, you agree to data usage terms"
-        error={error}
-      />
-      <Button
-        variant="contained"
-        onClick={handleSubmit}
-        style={{
-          backgroundImage: "linear-gradient(to top right, #A01A7D, #EC4067)",
-          color: "white",
-          marginLeft: theme.spacing(4)
-        }}
-      >
-        Get notified
-      </Button>
-    </form>
+    <Paper
+      style={{
+        padding: theme.spacing(2),
+        margin: theme.spacing(12),
+        backgroundColor: "white",
+      }}
+    >
+      <Typography variant="h6">Get texted as soon Rob makes a trade</Typography>
+      {submitted ? (
+        <Typography>Thanks for subscribing :)</Typography>
+      ) : (
+        <form
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <TextField
+            id="phone"
+            lable="Phone number"
+            variant="filled"
+            value={value}
+            onChange={(e) => setValue(e.value)}
+            placeholder="555-555-5555"
+            helperText="By submitting, you agree to data usage terms"
+            error={error}
+          />
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            style={{
+              backgroundImage:
+                "linear-gradient(to top right, #A01A7D, #EC4067)",
+              color: "white",
+              marginLeft: theme.spacing(4),
+            }}
+          >
+            Get notified
+          </Button>
+        </form>
+      )}
     </Paper>
   );
 };
 
 const TradesTable = ({ trades }) => {
   // Select only the three most recent trades
-  const filteredTrades = trades.filter(trade => {
-    return trade.trade_date
-  })
+  const filteredTrades = trades.filter((trade) => {
+    return trade.trade_date;
+  });
   const recentTrades = filteredTrades.slice(0, 3);
 
   // CTA to sign up on bottom
   return (
     <>
-      <Typography align="left" variant="h5">Three most recent trades</Typography>
+      <Typography align="left" variant="h5">
+        Three most recent trades
+      </Typography>
       <Table>
         <TableHead>
           <TableRow>
@@ -176,7 +202,10 @@ const TradesTable = ({ trades }) => {
 function CreateYourOwnPage() {
   return (
     <>
-      <Typography variant="h5" style={{ color: "white", padding: theme.spacing(2) }}>
+      <Typography
+        variant="h5"
+        style={{ color: "white", padding: theme.spacing(2) }}
+      >
         Interested in having your own page?
       </Typography>
       <Button
@@ -223,22 +252,24 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
-      <div style={{
-          backgroundImage: "linear-gradient(to top right, #669bbc, #ecd1e5)",
-        }}>
-        <Container maxWidth="md">
-          <Hero userInfo={userInfo} />
-          <TradesTable trades={trades} />
-          <SubscribeUpdateForm userInfo={userInfo} />
-          <HoldingsTable holdings={holdings} />
-        </Container>
+        <div
+          style={{
+            backgroundImage: "linear-gradient(to top right, #669bbc, #ecd1e5)",
+          }}
+        >
+          <Container maxWidth="md">
+            <Hero userInfo={userInfo} />
+            <TradesTable trades={trades} />
+            <SubscribeUpdateForm userInfo={userInfo} />
+            <HoldingsTable holdings={holdings} />
+          </Container>
         </div>
-        <div style={{backgroundColor: "black", padding: theme.spacing(12)}}>
-        <Container>
-        <CreateYourOwnPage />  
-        </Container>
+        <div style={{ backgroundColor: "black", padding: theme.spacing(12) }}>
+          <Container>
+            <CreateYourOwnPage />
+          </Container>
         </div>
-        </div>
+      </div>
     </ThemeProvider>
   );
 }
