@@ -229,11 +229,8 @@ function App() {
   const [holdings, setHoldings] = useState([]);
   const [trades, setTrades] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
-
-  const full = window.location.host
-//window.location.host is subdomain.domain.com
-  const parts = full.split('.')
-  const sub = parts[0]
+  
+  const sub = window.location.split('.')[0]
 
   const fetchPortfolio = () => {
     axios.get("https://api.withlaguna.com/stonks/holdings").then((res) => {
