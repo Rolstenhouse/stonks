@@ -139,7 +139,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
             lable="Phone number"
             variant="filled"
             value={value}
-            onChange={(e) => setValue(e.value)}
+            onChange={(e) => setValue(e.target.value)}
             placeholder="555-555-5555"
             helperText={error ? "Please enter the right phone number": "By submitting, you agree to data usage terms"}
             error={error}
