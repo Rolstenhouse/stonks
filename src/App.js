@@ -100,7 +100,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
     setError(false);
     setSubmitted(true);
     axios
-      .post("https://api.withlaguna.com/submit", {
+      .post("https://api.withlaguna.com/stonks/submit", {
         owner_id: userInfo.id,
         phone: value,
       })
@@ -229,7 +229,7 @@ function App() {
   const [holdings, setHoldings] = useState([]);
   const [trades, setTrades] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
-  
+
   const sub = window.location.split('.')[0]
 
   const fetchPortfolio = () => {
