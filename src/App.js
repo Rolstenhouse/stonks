@@ -96,6 +96,8 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
 
+  console.log('userInfo', userInfo)
+
   const handleSubmit = (e) => {
     setError(false);
     setSubmitted(true);
@@ -139,7 +141,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
             value={value}
             onChange={(e) => setValue(e.value)}
             placeholder="555-555-5555"
-            helperText="By submitting, you agree to data usage terms"
+            helperText={error ? "Please enter the right phone number": "By submitting, you agree to data usage terms"}
             error={error}
           />
           <Button
@@ -230,7 +232,7 @@ function App() {
   const [trades, setTrades] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
 
-  const sub = window.location.split('.')[0]
+  const sub = window.location.host.split('.')[0]
 
   const fetchPortfolio = () => {
     axios.get("https://api.withlaguna.com/stonks/holdings").then((res) => {
@@ -241,15 +243,7 @@ function App() {
     });
     axios.get(`https://api.withlaguna.com/stonks/userinfo/${sub}`).then((res) => {
       // setUserInfo(res.data.user);
-      console.log(res.data);
-
-      // override userinfo
-      setUserInfo({
-        title: "Rob's stonks",
-        description: "Investing with minimal DD in almost pure tech",
-        link: "https://robertolsthoorn.com",
-        owner_id: 1
-      });
+      setUserInfo(res.data)
     });
   };
 
