@@ -41,11 +41,11 @@ const Hero = ({ userInfo }) => {
   return (
     <div style={{ padding: theme.spacing(12) }}>
       <Typography variant="h2">{userInfo.title}</Typography>
-      <Typography variant="p1">{userInfo.description}</Typography>
-      <Typography variant="d2">
+      <Typography variant="">{userInfo.description}</Typography>
+      <Typography variant="">
         <Link href={userInfo.link}>{userInfo.link}</Link>
       </Typography>
-      <Typography>
+      <Typography variant="body2">
         Page built using <Link href="https://withlaguna.com/">Laguna</Link>
       </Typography>
     </div>
@@ -112,6 +112,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
       .catch(() => {
         setSubmitted(false);
         setError(true);
+        setValue("");
       });
   };
 
@@ -123,7 +124,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
         backgroundColor: "white",
       }}
     >
-      <Typography variant="h6">Get texted as soon Rob makes a trade</Typography>
+      <Typography variant="h6">Get texted as soons as Rob makes a trade</Typography>
       {submitted ? (
         <Typography>Thanks for subscribing :)</Typography>
       ) : (
@@ -211,7 +212,7 @@ function CreateYourOwnPage() {
         Interested in having your own page?
       </Typography>
       <Button
-        href="https://withlaguna.com"
+        href="https://airtable.com/shr3XDgLgKL6AoCgy"
         style={{
           backgroundImage: "linear-gradient(to top right, #A01A7D, #EC4067)",
           color: "white",
