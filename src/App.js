@@ -338,6 +338,7 @@ function App() {
         <div
           style={{
             backgroundImage: "linear-gradient(to top right, #669bbc, #ecd1e5)",
+            paddingBottom: theme.spacing(6)
           }}
         >
           <Container maxWidth="md">
