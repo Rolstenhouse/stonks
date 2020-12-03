@@ -41,11 +41,11 @@ const Hero = ({ userInfo }) => {
   return (
     <div style={{ padding: theme.spacing(12) }}>
       <Typography variant="h2">{userInfo.title}</Typography>
-      <Typography variant="">{userInfo.description}</Typography>
-      <Typography variant="">
+      <Typography variant="h6">{userInfo.description}</Typography>
+      <Typography variant="body1">
         <Link href={userInfo.link}>{userInfo.link}</Link>
       </Typography>
-      <Typography variant="body2">
+      <Typography variant="caption">
         Page built using <Link href="https://withlaguna.com/">Laguna</Link>
       </Typography>
     </div>
@@ -57,15 +57,19 @@ function calculateReturn(value, cost_basis) {
 }
 
 const HoldingsTable = ({ holdings, showAmounts }) => {
+  if (!holdings) return <></>;
+  
   const portfolioTotal = holdings.reduce(
-    (holding, sum) => holding.institution_value + sum, 0
+    (sum, holding) => holding.institution_value + sum,
+    0
   );
-
+  
   // Sort by percentage return
-  holdings.sort((a, b) => {
+  let sorted_holdings = [...holdings]
+  sorted_holdings.sort((a, b) => {
     return (
-      calculateReturn(a.value, a.cost_basis) -
-      calculateReturn(b.value, b.cost_basis)
+      calculateReturn(b.institution_value, b.cost_basis) -
+      calculateReturn(a.institution_value, a.cost_basis)
     );
   });
 
@@ -75,16 +79,20 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
         Current holdings
       </Typography>
       <Table size="small" style={{ paddingBottom: theme.spacing(4) }}>
-        <TableHead style={{fontWeight: 800}}>
+        <TableHead>
           <TableRow>
-            <TableCell>Ticker</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Amount Held (USD)</TableCell>
-            <TableCell>Total percentage return</TableCell>
+            {[
+              "Ticker",
+              "Name",
+              !!showAmounts ? "Amount held (USD)" : "Portfolio allocation (%)",
+              "Total percentage return",
+            ].map((title) => (
+              <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
+            ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {holdings.map((holding) => {
+          {sorted_holdings.map((holding) => {
             if (holding.ticker_symbol.includes("CUR:")) {
               return <></>;
             }
@@ -93,7 +101,9 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
               holding.institution_value,
               holding.cost_basis
             );
-            let amountHeld = toPercentage(holding.institution_value/portfolioTotal);
+            let amountHeld = toPercentage(
+              holding.institution_value / portfolioTotal
+            );
             if (showAmounts) {
               amountHeld = `$${holding.institution_value.toFixed(2)}`;
             }
@@ -116,8 +126,6 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   const [submitted, setSubmitted] = useState(false);
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
-
-  console.log("userInfo", userInfo);
 
   const handleSubmit = (e) => {
     setError(false);
@@ -207,10 +215,11 @@ const TradesTable = ({ trades }) => {
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Ticker</TableCell>
-            <TableCell>Quantity (shares)</TableCell>
-            <TableCell>Price (USD)</TableCell>
+            {["Date", "Ticker", "Quantity (shares)", "Price (USD)"].map(
+              (title) => (
+                <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
+              )
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
@@ -261,9 +270,13 @@ function App() {
   const [trades, setTrades] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
 
-  const sub = window.location.host.split(".")[0];
+  let sub = window.location.host.split(".")[0];
 
   const fetchPortfolio = () => {
+    if (process.env.NODE_ENV === "development") {
+      sub = "parth";
+    }
+
     axios
       .get(`https://api.withlaguna.com/stonks/holdings/${sub}`)
       .then((res) => {
