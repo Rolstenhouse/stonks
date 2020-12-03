@@ -29,7 +29,11 @@ const theme = createMuiTheme({
       "Arial",
       "sans-serif",
     ].join(","),
-  },
+  }, palette: {
+    secondary: {
+      main: '#ffffff'
+    }
+  }
 });
 
 // UTILS
@@ -43,10 +47,10 @@ const Hero = ({ userInfo }) => {
       <Typography variant="h2">{userInfo.title}</Typography>
       <Typography variant="h6">{userInfo.description}</Typography>
       <Typography variant="body1">
-        <Link href={userInfo.link} color='white'>{userInfo.link}</Link>
+        <Link href={userInfo.link} color='secondary'>{userInfo.link}</Link>
       </Typography>
       <Typography variant="caption">
-        Page built using <Link href="https://withlaguna.com/create-your-page" color='white'>Laguna</Link>
+        Page built using <Link href="https://withlaguna.com/create-your-page" color='secondary'>Laguna</Link>
       </Typography>
     </div>
   );
