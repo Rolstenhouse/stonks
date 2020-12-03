@@ -58,7 +58,7 @@ function calculateReturn(value, cost_basis) {
 
 const HoldingsTable = ({ holdings, showAmounts }) => {
   const portfolioTotal = holdings.reduce(
-    (holding, sum) => holding.institution_value + sum
+    (holding, sum) => holding.institution_value + sum, 0
   );
 
   // Sort by percentage return
@@ -68,14 +68,14 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
       calculateReturn(b.value, b.cost_basis)
     );
   });
-  
+
   return (
     <>
       <Typography align="left" variant="h5">
         Current holdings
       </Typography>
       <Table size="small" style={{ paddingBottom: theme.spacing(4) }}>
-        <TableHead>
+        <TableHead style={{fontWeight: 800}}>
           <TableRow>
             <TableCell>Ticker</TableCell>
             <TableCell>Name</TableCell>
@@ -146,7 +146,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
       }}
     >
       <Typography variant="h6">
-        Get texted as soons as Rob makes a trade
+        Get notified when {userInfo.title} makes a trade
       </Typography>
       {submitted ? (
         <Typography>Thanks for subscribing :)</Typography>
@@ -191,6 +191,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
 };
 
 const TradesTable = ({ trades }) => {
+  if (!trades) return <></>;
   // Select only the three most recent trades
   const filteredTrades = trades.filter((trade) => {
     return trade.trade_date;
