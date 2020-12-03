@@ -46,23 +46,31 @@ const toPercentage = (num) => {
 const Hero = ({ userInfo }) => {
   return (
     <Grid container justify="center">
-    <Grid item xs={11} sm={8}>
-    <div style={{ paddingTop: theme.spacing(12), paddingBottom: theme.spacing(12) }}>
-      <Typography variant="h2">{userInfo.title}</Typography>
-      <Typography variant="h6">{userInfo.description}</Typography>
-      <Typography variant="body1">
-        <Link href={userInfo.link} color="secondary">
-          {userInfo.link}
-        </Link>
-      </Typography>
-      <Typography variant="caption">
-        Page built using{" "}
-        <Link href="https://withlaguna.com/create-your-page" color="secondary">
-          Laguna
-        </Link>
-      </Typography>
-    </div>
-    </Grid>
+      <Grid item xs={11} sm={8}>
+        <div
+          style={{
+            paddingTop: theme.spacing(12),
+            paddingBottom: theme.spacing(12),
+          }}
+        >
+          <Typography variant="h2">{userInfo.title}</Typography>
+          <Typography variant="h6">{userInfo.description}</Typography>
+          <Typography variant="body1">
+            <Link href={userInfo.link} color="secondary">
+              {userInfo.link}
+            </Link>
+          </Typography>
+          <Typography variant="caption">
+            Page built using{" "}
+            <Link
+              href="https://withlaguna.com/create-your-page"
+              color="secondary"
+            >
+              Laguna
+            </Link>
+          </Typography>
+        </div>
+      </Grid>
     </Grid>
   );
 };
@@ -93,47 +101,51 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
       <Typography align="left" variant="h5">
         Current holdings
       </Typography>
-      <div style={{overflowX: 'auto', width: '100%'}}>
-      <Table size="small" style={{ paddingBottom: theme.spacing(4) }}>
-        <TableHead>
-          <TableRow>
-            {[
-              "Ticker",
-              "Name",
-              !!showAmounts ? "Amount held (USD)" : "Portfolio allocation (%)",
-              "Total percentage return",
-            ].map((title) => (
-              <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
-            ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {sorted_holdings.map((holding) => {
-            if (holding.ticker_symbol.includes("CUR:")) {
-              return <></>;
-            }
-            // Calculate return
-            const percentageReturn = calculateReturn(
-              holding.institution_value,
-              holding.cost_basis
-            );
-            let amountHeld = toPercentage(
-              holding.institution_value / portfolioTotal
-            );
-            if (showAmounts) {
-              amountHeld = `$${holding.institution_value.toFixed(2)}`;
-            }
-            return (
-              <TableRow>
-                <TableCell style={{maxWidth: '80px', overflowX: 'auto'}}>{holding.ticker_symbol}</TableCell>
-                <TableCell>{holding.name}</TableCell>
-                <TableCell>{amountHeld}</TableCell>
-                <TableCell>{toPercentage(percentageReturn)}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table size="small" style={{ paddingBottom: theme.spacing(4) }}>
+          <TableHead>
+            <TableRow>
+              {[
+                "Ticker",
+                "Name",
+                !!showAmounts
+                  ? "Amount held (USD)"
+                  : "Portfolio allocation (%)",
+                "Total percentage return",
+              ].map((title) => (
+                <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {sorted_holdings.map((holding) => {
+              if (holding.ticker_symbol.includes("CUR:")) {
+                return <></>;
+              }
+              // Calculate return
+              const percentageReturn = calculateReturn(
+                holding.institution_value,
+                holding.cost_basis
+              );
+              let amountHeld = toPercentage(
+                holding.institution_value / portfolioTotal
+              );
+              if (showAmounts) {
+                amountHeld = `$${holding.institution_value.toFixed(2)}`;
+              }
+              return (
+                <TableRow>
+                  <TableCell style={{ maxWidth: "80px", overflowX: "auto" }}>
+                    {holding.ticker_symbol}
+                  </TableCell>
+                  <TableCell>{holding.name}</TableCell>
+                  <TableCell>{amountHeld}</TableCell>
+                  <TableCell>{toPercentage(percentageReturn)}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
     </>
   );
@@ -223,10 +235,13 @@ const SubscribeUpdateForm = ({ userInfo }) => {
 const TradesTable = ({ trades }) => {
   if (!trades) return <></>;
   // Select only the three most recent trades
-  const filteredTrades = trades.filter((trade) => {
+  let sortedTrades = [...trades];
+  sortedTrades = sortedTrades.filter((trade) => {
     return trade.trade_date;
   });
-  const recentTrades = filteredTrades.slice(0, 3);
+
+  sortedTrades.sort((a, b) => b.trade_date.localeCompare(a.trade_date));
+  const recentTrades = sortedTrades.slice(0, 3);
 
   // CTA to sign up on bottom
   return (
@@ -234,30 +249,30 @@ const TradesTable = ({ trades }) => {
       <Typography align="left" variant="h5">
         Three most recent trades
       </Typography>
-      <div style={{overflowX: 'auto', width: '100%'}}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            {["Date", "Ticker", "Quantity (shares)", "Price (USD)"].map(
-              (title) => (
-                <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
-              )
-            )}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {recentTrades.map((trade) => {
-            return (
-              <TableRow>
-                <TableCell>{trade.trade_date.split(" ")[0]}</TableCell>
-                <TableCell>{trade.ticker}</TableCell>
-                <TableCell>{trade.quantity}</TableCell>
-                <TableCell>${trade.price}</TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+      <div style={{ overflowX: "auto", width: "100%" }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              {["Date", "Ticker", "Quantity (shares)", "Price (USD)"].map(
+                (title) => (
+                  <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
+                )
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {recentTrades.map((trade) => {
+              return (
+                <TableRow>
+                  <TableCell>{trade.trade_date.split(" ")[0]}</TableCell>
+                  <TableCell>{trade.ticker}</TableCell>
+                  <TableCell>{trade.quantity}</TableCell>
+                  <TableCell>${trade.price}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
     </>
   );
