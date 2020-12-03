@@ -90,10 +90,11 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
   // Sort by percentage return
   let sorted_holdings = [...holdings];
   sorted_holdings.sort((a, b) => {
-    return (
-      calculateReturn(b.institution_value, b.cost_basis) -
-      calculateReturn(a.institution_value, a.cost_basis)
-    );
+    return b.institution_value - a.institution_value;
+    // return (
+    //   calculateReturn(b.institution_value, b.cost_basis) -
+    //   calculateReturn(a.institution_value, a.cost_basis)
+    // );
   });
 
   return (
