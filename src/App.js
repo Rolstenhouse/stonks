@@ -236,10 +236,10 @@ function App() {
   const sub = window.location.host.split('.')[0]
 
   const fetchPortfolio = () => {
-    axios.get("https://api.withlaguna.com/stonks/holdings").then((res) => {
+    axios.get(`https://api.withlaguna.com/stonks/holdings/${sub}`).then((res) => {
       setHoldings(res.data.holdings);
     });
-    axios.get("https://api.withlaguna.com/stonks/trades").then((res) => {
+    axios.get(`https://api.withlaguna.com/stonks/trades/${sub}`).then((res) => {
       setTrades(res.data.trades);
     });
     axios.get(`https://api.withlaguna.com/stonks/userinfo/${sub}`).then((res) => {
