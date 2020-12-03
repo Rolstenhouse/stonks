@@ -43,10 +43,10 @@ const Hero = ({ userInfo }) => {
       <Typography variant="h2">{userInfo.title}</Typography>
       <Typography variant="h6">{userInfo.description}</Typography>
       <Typography variant="body1">
-        <Link href={userInfo.link}>{userInfo.link}</Link>
+        <Link href={userInfo.link} color='white'>{userInfo.link}</Link>
       </Typography>
       <Typography variant="caption">
-        Page built using <Link href="https://withlaguna.com/">Laguna</Link>
+        Page built using <Link href="https://withlaguna.com/create-your-page" color='white'>Laguna</Link>
       </Typography>
     </div>
   );
