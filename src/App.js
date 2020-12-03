@@ -15,6 +15,7 @@ import {
   Link,
   Container,
   Paper,
+  Grid,
 } from "@material-ui/core";
 
 import { createMuiTheme } from "@material-ui/core/styles";
@@ -29,11 +30,12 @@ const theme = createMuiTheme({
       "Arial",
       "sans-serif",
     ].join(","),
-  }, palette: {
+  },
+  palette: {
     secondary: {
-      main: '#ffffff'
-    }
-  }
+      main: "#ffffff",
+    },
+  },
 });
 
 // UTILS
@@ -43,16 +45,25 @@ const toPercentage = (num) => {
 
 const Hero = ({ userInfo }) => {
   return (
-    <div style={{ padding: theme.spacing(12) }}>
+    <Grid container justify="center">
+    <Grid item xs={11} sm={8}>
+    <div style={{ paddingTop: theme.spacing(12), paddingBottom: theme.spacing(12) }}>
       <Typography variant="h2">{userInfo.title}</Typography>
       <Typography variant="h6">{userInfo.description}</Typography>
       <Typography variant="body1">
-        <Link href={userInfo.link} color='secondary'>{userInfo.link}</Link>
+        <Link href={userInfo.link} color="secondary">
+          {userInfo.link}
+        </Link>
       </Typography>
       <Typography variant="caption">
-        Page built using <Link href="https://withlaguna.com/create-your-page" color='secondary'>Laguna</Link>
+        Page built using{" "}
+        <Link href="https://withlaguna.com/create-your-page" color="secondary">
+          Laguna
+        </Link>
       </Typography>
     </div>
+    </Grid>
+    </Grid>
   );
 };
 
@@ -62,14 +73,14 @@ function calculateReturn(value, cost_basis) {
 
 const HoldingsTable = ({ holdings, showAmounts }) => {
   if (!holdings) return <></>;
-  
+
   const portfolioTotal = holdings.reduce(
     (sum, holding) => holding.institution_value + sum,
     0
   );
-  
+
   // Sort by percentage return
-  let sorted_holdings = [...holdings]
+  let sorted_holdings = [...holdings];
   sorted_holdings.sort((a, b) => {
     return (
       calculateReturn(b.institution_value, b.cost_basis) -
@@ -82,6 +93,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
       <Typography align="left" variant="h5">
         Current holdings
       </Typography>
+      <div style={{overflowX: 'auto', width: '100%'}}>
       <Table size="small" style={{ paddingBottom: theme.spacing(4) }}>
         <TableHead>
           <TableRow>
@@ -113,7 +125,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
             }
             return (
               <TableRow>
-                <TableCell>{holding.ticker_symbol}</TableCell>
+                <TableCell style={{maxWidth: '80px', overflowX: 'auto'}}>{holding.ticker_symbol}</TableCell>
                 <TableCell>{holding.name}</TableCell>
                 <TableCell>{amountHeld}</TableCell>
                 <TableCell>{toPercentage(percentageReturn)}</TableCell>
@@ -122,6 +134,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
           })}
         </TableBody>
       </Table>
+      </div>
     </>
   );
 };
@@ -150,55 +163,60 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   };
 
   return (
-    <Paper
-      style={{
-        padding: theme.spacing(2),
-        margin: theme.spacing(12),
-        backgroundColor: "white",
-      }}
-    >
-      <Typography variant="h6">
-        Get notified when {userInfo.title} makes a trade
-      </Typography>
-      {submitted ? (
-        <Typography>Thanks for subscribing :)</Typography>
-      ) : (
-        <form
+    <Grid container justify="center">
+      <Grid item xs={11} sm={8}>
+        <Paper
           style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            padding: theme.spacing(2),
+            marginTop: theme.spacing(12),
+            marginBottom: theme.spacing(12),
+            backgroundColor: "white",
           }}
         >
-          <TextField
-            id="phone"
-            lable="Phone number"
-            variant="filled"
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            placeholder="555-555-5555"
-            helperText={
-              error
-                ? "Please enter the right phone number"
-                : "By submitting, you agree to data usage terms"
-            }
-            error={error}
-          />
-          <Button
-            variant="contained"
-            onClick={handleSubmit}
-            style={{
-              backgroundImage:
-                "linear-gradient(to top right, #A01A7D, #EC4067)",
-              color: "white",
-              marginLeft: theme.spacing(4),
-            }}
-          >
-            Get notified
-          </Button>
-        </form>
-      )}
-    </Paper>
+          <Typography variant="h6">
+            Get notified when {userInfo.title} makes a trade
+          </Typography>
+          {submitted ? (
+            <Typography>Thanks for subscribing :)</Typography>
+          ) : (
+            <form
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <TextField
+                id="phone"
+                lable="Phone number"
+                variant="filled"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder="555-555-5555"
+                helperText={
+                  error
+                    ? "Please enter the right phone number"
+                    : "By submitting, you agree to data usage terms"
+                }
+                error={error}
+              />
+              <Button
+                variant="contained"
+                onClick={handleSubmit}
+                style={{
+                  backgroundImage:
+                    "linear-gradient(to top right, #A01A7D, #EC4067)",
+                  color: "white",
+                  marginLeft: theme.spacing(4),
+                }}
+              >
+                Get notified
+              </Button>
+            </form>
+          )}
+        </Paper>
+      </Grid>
+    </Grid>
   );
 };
 
@@ -216,6 +234,7 @@ const TradesTable = ({ trades }) => {
       <Typography align="left" variant="h5">
         Three most recent trades
       </Typography>
+      <div style={{overflowX: 'auto', width: '100%'}}>
       <Table>
         <TableHead>
           <TableRow>
@@ -239,6 +258,7 @@ const TradesTable = ({ trades }) => {
           })}
         </TableBody>
       </Table>
+      </div>
     </>
   );
 };
