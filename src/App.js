@@ -52,7 +52,23 @@ const Hero = ({ userInfo }) => {
   );
 };
 
-const HoldingsTable = ({ holdings }) => {
+function calculateReturn(value, cost_basis) {
+  return value / cost_basis - 1;
+}
+
+const HoldingsTable = ({ holdings, showAmounts }) => {
+  const portfolioTotal = holdings.reduce(
+    (holding, sum) => holding.institution_value + sum
+  );
+
+  // Sort by percentage return
+  holdings.sort((a, b) => {
+    return (
+      calculateReturn(a.value, a.cost_basis) -
+      calculateReturn(b.value, b.cost_basis)
+    );
+  });
+  
   return (
     <>
       <Typography align="left" variant="h5">
@@ -73,14 +89,19 @@ const HoldingsTable = ({ holdings }) => {
               return <></>;
             }
             // Calculate return
-            const percentageReturn =
-              holding.institution_value / holding.cost_basis - 1;
-            const amountHeld = holding.institution_value;
+            const percentageReturn = calculateReturn(
+              holding.institution_value,
+              holding.cost_basis
+            );
+            let amountHeld = toPercentage(holding.institution_value/portfolioTotal);
+            if (showAmounts) {
+              amountHeld = `$${holding.institution_value.toFixed(2)}`;
+            }
             return (
               <TableRow>
                 <TableCell>{holding.ticker_symbol}</TableCell>
                 <TableCell>{holding.name}</TableCell>
-                <TableCell>${amountHeld.toFixed(2)}</TableCell>
+                <TableCell>{amountHeld}</TableCell>
                 <TableCell>{toPercentage(percentageReturn)}</TableCell>
               </TableRow>
             );
@@ -96,7 +117,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   const [value, setValue] = useState("");
   const [error, setError] = useState(false);
 
-  console.log('userInfo', userInfo)
+  console.log("userInfo", userInfo);
 
   const handleSubmit = (e) => {
     setError(false);
@@ -124,7 +145,9 @@ const SubscribeUpdateForm = ({ userInfo }) => {
         backgroundColor: "white",
       }}
     >
-      <Typography variant="h6">Get texted as soons as Rob makes a trade</Typography>
+      <Typography variant="h6">
+        Get texted as soons as Rob makes a trade
+      </Typography>
       {submitted ? (
         <Typography>Thanks for subscribing :)</Typography>
       ) : (
@@ -142,7 +165,11 @@ const SubscribeUpdateForm = ({ userInfo }) => {
             value={value}
             onChange={(e) => setValue(e.target.value)}
             placeholder="555-555-5555"
-            helperText={error ? "Please enter the right phone number": "By submitting, you agree to data usage terms"}
+            helperText={
+              error
+                ? "Please enter the right phone number"
+                : "By submitting, you agree to data usage terms"
+            }
             error={error}
           />
           <Button
@@ -233,19 +260,23 @@ function App() {
   const [trades, setTrades] = useState([]);
   const [userInfo, setUserInfo] = useState([]);
 
-  const sub = window.location.host.split('.')[0]
+  const sub = window.location.host.split(".")[0];
 
   const fetchPortfolio = () => {
-    axios.get(`https://api.withlaguna.com/stonks/holdings/${sub}`).then((res) => {
-      setHoldings(res.data.holdings);
-    });
+    axios
+      .get(`https://api.withlaguna.com/stonks/holdings/${sub}`)
+      .then((res) => {
+        setHoldings(res.data.holdings);
+      });
     axios.get(`https://api.withlaguna.com/stonks/trades/${sub}`).then((res) => {
       setTrades(res.data.trades);
     });
-    axios.get(`https://api.withlaguna.com/stonks/userinfo/${sub}`).then((res) => {
-      // setUserInfo(res.data.user);
-      setUserInfo(res.data)
-    });
+    axios
+      .get(`https://api.withlaguna.com/stonks/userinfo/${sub}`)
+      .then((res) => {
+        // setUserInfo(res.data.user);
+        setUserInfo(res.data);
+      });
   };
 
   return (
@@ -260,7 +291,10 @@ function App() {
             <Hero userInfo={userInfo} />
             <TradesTable trades={trades} />
             <SubscribeUpdateForm userInfo={userInfo} />
-            <HoldingsTable holdings={holdings} />
+            <HoldingsTable
+              holdings={holdings}
+              showAmounts={userInfo.show_amounts}
+            />
           </Container>
         </div>
         <div style={{ backgroundColor: "black", padding: theme.spacing(12) }}>
