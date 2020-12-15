@@ -1,6 +1,7 @@
 import { execOnce } from "next/dist/next-server/lib/utils";
 import Head from "next/head";
 import MainPage from "../components/MainPage";
+import axios from "axios";
 
 function Home({ userInfo, sub }) {
   return (
@@ -39,24 +40,23 @@ export async function getServerSideProps(ctx) {
     sub = "rob";
   }
 
-  const res = await fetch(`https://api.withlaguna.com/stonks/userinfo/${sub}`);
-  let userInfo;
   try {
-    userInfo = await res.json()
-  } catch {}
+    const res = await fetch(
+      `https://api.withlaguna.com/stonks/userinfo/${sub}`
+    );
+    const userInfo = await res.json();
 
-  if (!userInfo) {
+    return {
+      props: {
+        userInfo,
+        sub,
+      },
+    };
+  } catch {
     return {
       notFound: true,
     };
   }
-
-  return {
-    props: {
-      userInfo,
-      sub,
-    },
-  };
 }
 
 export default Home;
