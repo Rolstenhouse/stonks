@@ -288,7 +288,7 @@ function CreateYourOwnPage() {
         Interested in having your own page?
       </Typography>
       <Button
-        href="https://airtable.com/shr3XDgLgKL6AoCgy"
+        href="https://access.withlaguna.com"
         style={{
           backgroundImage: "linear-gradient(to top right, #A01A7D, #EC4067)",
           color: "white",
