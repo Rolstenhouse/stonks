@@ -3,14 +3,43 @@ import Head from "next/head";
 import MainPage from "../components/MainPage";
 import axios from "axios";
 
+Date.prototype.toShortFormat = function () {
+  let monthNames = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
+  let monthIndex = this.getMonth();
+  let monthName = monthNames[monthIndex];
+
+  let year = this.getFullYear();
+
+  return `${monthName}. ${year}`;
+};
+
 function Home({ userInfo, sub }) {
+  let anyDate = new Date();
   return (
     <>
       <Head>
-        <title>{userInfo.title}</title>
+        <title>{`${userInfo.title} - ${anyDate.toShortFormat()}`}</title>
         <link rel="icon" href="/favicon.ico" />
-        <meta name="description" content={userInfo.description} />
-
+        <meta
+          name="description"
+          content={`Stock portfolio, returns and notifications for ${
+            userInfo.name ? userInfo.name : "Laguna"
+          } - ${userInfo.description} - ${anyDate.toShortFormat()}`}
+        />
         <script
           async
           src="https://www.googletagmanager.com/gtag/js?id=G-XVSNB8VETM"
