@@ -288,7 +288,7 @@ function CreateYourOwnPage() {
         Interested in having your own page?
       </Typography>
       <Button
-        href="https://access.withlaguna.com"
+        href="https://withlaguna.com/create-your-page"
         style={{
           backgroundImage: "linear-gradient(to top right, #A01A7D, #EC4067)",
           color: "white",
