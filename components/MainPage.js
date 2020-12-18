@@ -20,6 +20,10 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import { getServerSideProps } from "../pages";
 
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
 const theme = createMuiTheme({
   typography: {
     fontFamily: [
@@ -250,7 +254,7 @@ const TradesTable = ({ trades }) => {
         <Table>
           <TableHead>
             <TableRow>
-              {["Date", "Ticker", "Quantity (shares)", "Price (USD)"].map(
+              {["Date", "Ticker", "Type", "Quantity (shares)", "Price (USD)"].map(
                 (title) => (
                   <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
                 )
@@ -263,6 +267,7 @@ const TradesTable = ({ trades }) => {
                 <TableRow>
                   <TableCell>{trade.trade_date.split(" ")[0]}</TableCell>
                   <TableCell>{trade.ticker}</TableCell>
+                  <TableCell>{trade.trade_type.capitalize()}</TableCell>
                   <TableCell>{trade.quantity}</TableCell>
                   <TableCell>${trade.price.toFixed(2)}</TableCell>
                 </TableRow>
