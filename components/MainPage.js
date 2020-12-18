@@ -119,13 +119,10 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
           </TableHead>
           <TableBody>
             {sorted_holdings.map((holding) => {
-              if (holding.ticker_symbol.includes("CUR:")) {
-                return <></>;
-              }
               // Calculate return
               const percentageReturn = calculateReturn(
                 holding.institution_value,
-                holding.cost_basis
+                !!holding.cost_basis ? holding.cost_basis : holding.quantity
               );
               let amountHeld = toPercentage(
                 holding.institution_value / portfolioTotal
