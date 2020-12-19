@@ -7,6 +7,7 @@ import {
   TableRow,
   TableBody,
   TableCell,
+  TableSortLabel,
   TextField,
   Button,
   Typography,
@@ -20,9 +21,9 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import { getServerSideProps } from "../pages";
 
-String.prototype.capitalize = function() {
+String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
-}
+};
 
 const theme = createMuiTheme({
   typography: {
@@ -82,6 +83,32 @@ function calculateReturn(value, cost_basis) {
   return value / cost_basis - 1;
 }
 
+function descendingComparator(a, b, orderBy) {
+  if (b[orderBy] < a[orderBy]) {
+    return -1;
+  }
+  if (b[orderBy] > a[orderBy]) {
+    return 1;
+  }
+  return 0;
+}
+
+function getComparator(order, orderBy) {
+  return order === "desc"
+    ? (a, b) => descendingComparator(a, b, orderBy)
+    : (a, b) => -descendingComparator(a, b, orderBy);
+}
+
+function stableSort(array, comparator) {
+  const stabilizedThis = array.map((el, index) => [el, index]);
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
+  return stabilizedThis.map((el) => el[0]);
+}
+
 const HoldingsTable = ({ holdings, showAmounts }) => {
   if (!holdings) return <></>;
 
@@ -90,15 +117,27 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
     0
   );
 
-  // Sort by percentage return
-  let sorted_holdings = [...holdings];
-  sorted_holdings.sort((a, b) => {
-    return b.institution_value - a.institution_value;
-    // return (
-    //   calculateReturn(b.institution_value, b.cost_basis) -
-    //   calculateReturn(a.institution_value, a.cost_basis)
-    // );
-  });
+  const cleanedHoldings = holdings.map(holding => {
+    let cleaner = Object.assign({}, holding)
+    cleaner.percentage_return = calculateReturn(
+      holding.institution_value,
+      !!holding.cost_basis ? holding.cost_basis : holding.quantity
+    );
+    return cleaner
+  })
+
+  const createSortHandler = (property) => (event) => {
+    handleRequestSort(event, property);
+  };
+
+  const [order, setOrder] = useState("desc");
+  const [orderBy, setOrderBy] = useState("institution_value");
+
+  const handleRequestSort = (event, property) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
 
   return (
     <>
@@ -110,41 +149,53 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
           <TableHead>
             <TableRow>
               {[
-                "Ticker",
-                "Name",
-                !!showAmounts
-                  ? "Amount held (USD)"
-                  : "Portfolio allocation (%)",
-                "Total percentage return",
-              ].map((title) => (
-                <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
+                { id: "ticker_symbol", title: "Ticker" },
+                { id: "name", title: "Name" },
+                {
+                  id: "institution_value",
+                  title: !!showAmounts
+                    ? "Amount held (USD)"
+                    : "Portfolio allocation (%)",
+                },
+                { id: "percentage_return", title: "Total percentage return" },
+              ].map((headCell) => (
+                <TableCell
+                  key={headCell.id}
+                  sortDirection={orderBy === headCell.id ? order : false}
+                  style={{ fontWeight: 800 }}
+                >
+                  <TableSortLabel
+                    active={orderBy === headCell.id}
+                    direction={orderBy === headCell.id ? order : "asc"}
+                    onClick={createSortHandler(headCell.id)}
+                  >
+                    {headCell.title}
+                  </TableSortLabel>
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {sorted_holdings.map((holding) => {
-              // Calculate return
-              const percentageReturn = calculateReturn(
-                holding.institution_value,
-                !!holding.cost_basis ? holding.cost_basis : holding.quantity
-              );
-              let amountHeld = toPercentage(
-                holding.institution_value / portfolioTotal
-              );
-              if (showAmounts) {
-                amountHeld = `$${holding.institution_value.toFixed(2)}`;
+            {stableSort(cleanedHoldings, getComparator(order, orderBy)).map(
+              (holding) => {
+                let amountHeld = toPercentage(
+                  holding.institution_value / portfolioTotal
+                );
+                if (showAmounts) {
+                  amountHeld = `$${holding.institution_value.toFixed(2)}`;
+                }
+                return (
+                  <TableRow>
+                    <TableCell style={{ maxWidth: "80px", overflowX: "auto" }}>
+                      {holding.ticker_symbol}
+                    </TableCell>
+                    <TableCell>{holding.name}</TableCell>
+                    <TableCell>{amountHeld}</TableCell>
+                    <TableCell>{toPercentage(holding.percentage_return)}</TableCell>
+                  </TableRow>
+                );
               }
-              return (
-                <TableRow>
-                  <TableCell style={{ maxWidth: "80px", overflowX: "auto" }}>
-                    {holding.ticker_symbol}
-                  </TableCell>
-                  <TableCell>{holding.name}</TableCell>
-                  <TableCell>{amountHeld}</TableCell>
-                  <TableCell>{toPercentage(percentageReturn)}</TableCell>
-                </TableRow>
-              );
-            })}
+            )}
           </TableBody>
         </Table>
       </div>
@@ -254,11 +305,15 @@ const TradesTable = ({ trades }) => {
         <Table>
           <TableHead>
             <TableRow>
-              {["Date", "Ticker", "Type", "Quantity (shares)", "Price (USD)"].map(
-                (title) => (
-                  <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
-                )
-              )}
+              {[
+                "Date",
+                "Ticker",
+                "Type",
+                "Quantity (shares)",
+                "Price (USD)",
+              ].map((title) => (
+                <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
+              ))}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -302,16 +357,16 @@ function CreateYourOwnPage() {
   );
 }
 
-function App({userInfo, sub}) {
+function App({ userInfo, sub }) {
   useEffect(() => {
     fetchPortfolio();
   }, []);
 
   const [holdings, setHoldings] = useState([]);
   const [trades, setTrades] = useState([]);
-//   const [userInfo, setUserInfo] = useState([]);
+  //   const [userInfo, setUserInfo] = useState([]);
 
-//   let sub = window.location.host.split(".")[0];
+  //   let sub = window.location.host.split(".")[0];
 
   const fetchPortfolio = () => {
     // if (process.env.NODE_ENV === "development") {
@@ -340,7 +395,7 @@ function App({userInfo, sub}) {
         <div
           style={{
             backgroundImage: "linear-gradient(to top right, #669bbc, #ecd1e5)",
-            paddingBottom: theme.spacing(6)
+            paddingBottom: theme.spacing(6),
           }}
         >
           <Container maxWidth="md">
