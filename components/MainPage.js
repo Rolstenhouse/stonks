@@ -117,14 +117,14 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
     0
   );
 
-  const cleanedHoldings = holdings.map(holding => {
-    let cleaner = Object.assign({}, holding)
+  const cleanedHoldings = holdings.map((holding) => {
+    let cleaner = Object.assign({}, holding);
     cleaner.percentage_return = calculateReturn(
       holding.institution_value,
       !!holding.cost_basis ? holding.cost_basis : holding.quantity
     );
-    return cleaner
-  })
+    return cleaner;
+  });
 
   const createSortHandler = (property) => (event) => {
     handleRequestSort(event, property);
@@ -191,7 +191,9 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
                     </TableCell>
                     <TableCell>{holding.name}</TableCell>
                     <TableCell>{amountHeld}</TableCell>
-                    <TableCell>{toPercentage(holding.percentage_return)}</TableCell>
+                    <TableCell>
+                      {toPercentage(holding.percentage_return)}
+                    </TableCell>
                   </TableRow>
                 );
               }
@@ -206,6 +208,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
 const SubscribeUpdateForm = ({ userInfo }) => {
   const [submitted, setSubmitted] = useState(false);
   const [value, setValue] = useState("");
+  const [name, setName] = useState("");
   const [error, setError] = useState(false);
 
   const handleSubmit = (e) => {
@@ -215,6 +218,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
       .post("https://api.withlaguna.com/stonks/submit", {
         owner_id: userInfo.id,
         phone: value,
+        name: name,
       })
       .then((res) => {
         setSubmitted(true);
@@ -250,20 +254,35 @@ const SubscribeUpdateForm = ({ userInfo }) => {
                 alignItems: "center",
               }}
             >
-              <TextField
-                id="phone"
-                lable="Phone number"
-                variant="filled"
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-                placeholder="555-555-5555"
-                helperText={
-                  error
-                    ? "Please enter the right phone number"
-                    : "By submitting, you agree to data usage terms"
-                }
-                error={error}
-              />
+              <div style={{
+                display: "flex",
+                flexDirection: "column",
+
+              }}>
+                <TextField
+                  id="name"
+                  label="Name"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
+                  placeholder="Warren Buffett"
+                  style={{marginBottom: theme.spacing(1)}}
+                />
+                <TextField
+                  id="phone"
+                  label="Phone number"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder="555-555-5555"
+                  helperText={
+                    error
+                      ? "Please enter the right phone number"
+                      : "By submitting, you agree to data usage terms"
+                  }
+                  error={error}
+                />
+              </div>
               <Button
                 variant="contained"
                 onClick={handleSubmit}
