@@ -254,11 +254,12 @@ const SubscribeUpdateForm = ({ userInfo }) => {
                 alignItems: "center",
               }}
             >
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-
-              }}>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <TextField
                   id="name"
                   label="Name"
@@ -267,7 +268,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
                     setName(e.target.value);
                   }}
                   placeholder="Warren Buffett"
-                  style={{marginBottom: theme.spacing(1)}}
+                  style={{ marginBottom: theme.spacing(1) }}
                 />
                 <TextField
                   id="phone"
@@ -303,7 +304,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   );
 };
 
-const TradesTable = ({ trades }) => {
+const TradesTable = ({ trades, showAmounts, portfolioTotal }) => {
   if (!trades) return <></>;
   // Select only the three most recent trades
   let sortedTrades = [...trades];
@@ -312,7 +313,7 @@ const TradesTable = ({ trades }) => {
   });
 
   sortedTrades.sort((a, b) => b.trade_date.localeCompare(a.trade_date));
-  const recentTrades = sortedTrades.slice(0, 3);
+  let recentTrades = sortedTrades.slice(0, 3);
 
   // CTA to sign up on bottom
   return (
@@ -328,7 +329,7 @@ const TradesTable = ({ trades }) => {
                 "Date",
                 "Ticker",
                 "Type",
-                "Quantity (shares)",
+                showAmounts ? "Quantity (shares)" : "Percentage of portfolio",
                 "Price (USD)",
               ].map((title) => (
                 <TableCell style={{ fontWeight: 800 }}>{title}</TableCell>
@@ -342,7 +343,15 @@ const TradesTable = ({ trades }) => {
                   <TableCell>{trade.trade_date.split(" ")[0]}</TableCell>
                   <TableCell>{trade.ticker}</TableCell>
                   <TableCell>{trade.trade_type.capitalize()}</TableCell>
-                  <TableCell>{trade.quantity}</TableCell>
+                  {showAmounts ? (
+                    <TableCell>{trade.quantity}</TableCell>
+                  ) : (
+                    <TableCell>
+                      {toPercentage(
+                        (Math.abs(trade.quantity) * trade.price) / portfolioTotal
+                      )}
+                    </TableCell>
+                  )}
                   <TableCell>${trade.price.toFixed(2)}</TableCell>
                 </TableRow>
               );
@@ -408,6 +417,11 @@ function App({ userInfo, sub }) {
     //   });
   };
 
+  const portfolioTotal = holdings.reduce(
+    (sum, holding) => holding.institution_value + sum,
+    0
+  );
+
   return (
     <ThemeProvider theme={theme}>
       <div className="App">
@@ -419,7 +433,11 @@ function App({ userInfo, sub }) {
         >
           <Container maxWidth="md">
             <Hero userInfo={userInfo} />
-            <TradesTable trades={trades} />
+            <TradesTable
+              trades={trades}
+              portfolioTotal={portfolioTotal}
+              showAmounts={userInfo.show_amounts}
+            />
             <SubscribeUpdateForm userInfo={userInfo} />
             <HoldingsTable
               holdings={holdings}
