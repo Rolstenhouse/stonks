@@ -66,10 +66,7 @@ const Hero = ({ userInfo }) => {
           </Typography>
           <Typography variant="caption">
             Page built using{" "}
-            <Link
-              href="https://withlaguna.com/create-your-page"
-              color="secondary"
-            >
+            <Link href="https://withlaguna.com" color="secondary">
               Laguna
             </Link>
           </Typography>
@@ -149,6 +146,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
           <TableHead>
             <TableRow>
               {[
+                { id: "verified" },
                 { id: "ticker_symbol", title: "Ticker" },
                 { id: "name", title: "Name" },
                 {
@@ -169,7 +167,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
                     direction={orderBy === headCell.id ? order : "asc"}
                     onClick={createSortHandler(headCell.id)}
                   >
-                    {headCell.title}
+                    {headCell?.title}
                   </TableSortLabel>
                 </TableCell>
               ))}
@@ -186,6 +184,9 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
                 }
                 return (
                   <TableRow>
+                    <TableCell>
+                      {!!holding.plaid_security_id && <>✅</>}
+                    </TableCell>
                     <TableCell style={{ maxWidth: "80px", overflowX: "auto" }}>
                       {holding.ticker_symbol}
                     </TableCell>
@@ -326,6 +327,7 @@ const TradesTable = ({ trades, showAmounts, portfolioTotal }) => {
           <TableHead>
             <TableRow>
               {[
+                "",
                 "Date",
                 "Ticker",
                 "Type",
@@ -340,6 +342,7 @@ const TradesTable = ({ trades, showAmounts, portfolioTotal }) => {
             {recentTrades.map((trade) => {
               return (
                 <TableRow>
+                  <TableCell>{!trade.is_manual && <>✅</>}</TableCell>
                   <TableCell>{trade.trade_date.split(" ")[0]}</TableCell>
                   <TableCell>{trade.ticker}</TableCell>
                   <TableCell>{trade.trade_type.capitalize()}</TableCell>
@@ -348,7 +351,8 @@ const TradesTable = ({ trades, showAmounts, portfolioTotal }) => {
                   ) : (
                     <TableCell>
                       {toPercentage(
-                        (Math.abs(trade.quantity) * trade.price) / portfolioTotal
+                        (Math.abs(trade.quantity) * trade.price) /
+                          portfolioTotal
                       )}
                     </TableCell>
                   )}
