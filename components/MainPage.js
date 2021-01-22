@@ -20,6 +20,7 @@ import {
 import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import { getServerSideProps } from "../pages";
+import ScrollableAnchor from "react-scrollable-anchor";
 
 let BASE_DOMAIN = `https://api.withlaguna.com`;
 if (process.env.NODE_ENV === "development") BASE_DOMAIN = "http://0.0.0.0:5000";
@@ -235,76 +236,78 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   };
 
   return (
-    <Grid id="subscribe" container justify="center">
-      <Grid item xs={11} sm={8}>
-        <Paper
-          style={{
-            padding: theme.spacing(2),
-            marginTop: theme.spacing(12),
-            marginBottom: theme.spacing(12),
-            backgroundColor: "white",
-          }}
-        >
-          <Typography variant="h6">
-            Get notified when {userInfo.title} makes a trade
-          </Typography>
-          {submitted ? (
-            <Typography>Thanks for subscribing :)</Typography>
-          ) : (
-            <form
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <div
+    <ScrollableAnchor id="subscribe">
+      <Grid container justify="center">
+        <Grid item xs={11} sm={8}>
+          <Paper
+            style={{
+              padding: theme.spacing(2),
+              marginTop: theme.spacing(12),
+              marginBottom: theme.spacing(12),
+              backgroundColor: "white",
+            }}
+          >
+            <Typography variant="h6">
+              Get notified when {userInfo.title} makes a trade
+            </Typography>
+            {submitted ? (
+              <Typography>Thanks for subscribing :)</Typography>
+            ) : (
+              <form
                 style={{
                   display: "flex",
-                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
                 }}
               >
-                <TextField
-                  id="name"
-                  label="Name"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
                   }}
-                  placeholder="Warren Buffett"
-                  style={{ marginBottom: theme.spacing(1) }}
-                />
-                <TextField
-                  id="phone"
-                  label="Phone number"
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                  placeholder="555-555-5555"
-                  helperText={
-                    error
-                      ? "Please enter the right phone number"
-                      : "By submitting, you agree to data usage terms"
-                  }
-                  error={error}
-                />
-              </div>
-              <Button
-                variant="contained"
-                onClick={handleSubmit}
-                style={{
-                  backgroundImage:
-                    "linear-gradient(to top right, #A01A7D, #EC4067)",
-                  color: "white",
-                  marginLeft: theme.spacing(4),
-                }}
-              >
-                Get notified
-              </Button>
-            </form>
-          )}
-        </Paper>
+                >
+                  <TextField
+                    id="name"
+                    label="Name"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                    placeholder="Warren Buffett"
+                    style={{ marginBottom: theme.spacing(1) }}
+                  />
+                  <TextField
+                    id="phone"
+                    label="Phone number"
+                    value={value}
+                    onChange={(e) => setValue(e.target.value)}
+                    placeholder="555-555-5555"
+                    helperText={
+                      error
+                        ? "Please enter the right phone number"
+                        : "By submitting, you agree to data usage terms"
+                    }
+                    error={error}
+                  />
+                </div>
+                <Button
+                  variant="contained"
+                  onClick={handleSubmit}
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(to top right, #A01A7D, #EC4067)",
+                    color: "white",
+                    marginLeft: theme.spacing(4),
+                  }}
+                >
+                  Get notified
+                </Button>
+              </form>
+            )}
+          </Paper>
+        </Grid>
       </Grid>
-    </Grid>
+    </ScrollableAnchor>
   );
 };
 
@@ -408,11 +411,9 @@ function App({ userInfo, sub }) {
     //   sub = "parth";
     // }
 
-    axios
-      .get(`${BASE_DOMAIN}/stonks/holdings/${sub}`)
-      .then((res) => {
-        setHoldings(res.data.holdings);
-      });
+    axios.get(`${BASE_DOMAIN}/stonks/holdings/${sub}`).then((res) => {
+      setHoldings(res.data.holdings);
+    });
     axios.get(`${BASE_DOMAIN}/stonks/trades/${sub}`).then((res) => {
       setTrades(res.data.trades);
     });
