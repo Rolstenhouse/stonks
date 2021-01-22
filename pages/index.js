@@ -65,13 +65,16 @@ function Home({ userInfo, sub }) {
 export async function getServerSideProps(ctx) {
   const host = ctx.req.headers.host;
   let sub = host.split(".")[0];
+  let BASE_DOMAIN = `https://api.withlaguna.com`;
+  
   if (process.env.NODE_ENV === "development") {
     sub = "rob";
+    BASE_DOMAIN = "http://0.0.0.0:5000";
   }
 
   try {
     const res = await fetch(
-      `https://api.withlaguna.com/stonks/userinfo/${sub}`
+      `${BASE_DOMAIN}/stonks/userinfo/${sub}`
     );
     const userInfo = await res.json();
 

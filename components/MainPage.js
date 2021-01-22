@@ -21,6 +21,9 @@ import { createMuiTheme } from "@material-ui/core/styles";
 import { ThemeProvider } from "@material-ui/styles";
 import { getServerSideProps } from "../pages";
 
+let BASE_DOMAIN = `https://api.withlaguna.com`;
+if (process.env.NODE_ENV === "development") BASE_DOMAIN = "http://0.0.0.0:5000";
+
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };
@@ -216,7 +219,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
     setError(false);
     setSubmitted(true);
     axios
-      .post("https://api.withlaguna.com/stonks/submit", {
+      .post(`${BASE_DOMAIN}/stonks/submit`, {
         owner_id: userInfo.id,
         phone: value,
         name: name,
@@ -377,7 +380,7 @@ function CreateYourOwnPage() {
         Interested in having your own page?
       </Typography>
       <Button
-        href="https://withlaguna.com/create-your-page"
+        href="https://withlaguna.com/"
         style={{
           backgroundImage: "linear-gradient(to top right, #A01A7D, #EC4067)",
           color: "white",
@@ -406,19 +409,13 @@ function App({ userInfo, sub }) {
     // }
 
     axios
-      .get(`https://api.withlaguna.com/stonks/holdings/${sub}`)
+      .get(`${BASE_DOMAIN}/stonks/holdings/${sub}`)
       .then((res) => {
         setHoldings(res.data.holdings);
       });
-    axios.get(`https://api.withlaguna.com/stonks/trades/${sub}`).then((res) => {
+    axios.get(`${BASE_DOMAIN}/stonks/trades/${sub}`).then((res) => {
       setTrades(res.data.trades);
     });
-    // axios
-    //   .get(`https://api.withlaguna.com/stonks/userinfo/${sub}`)
-    //   .then((res) => {
-    //     // setUserInfo(res.data.user);
-    //     setUserInfo(res.data);
-    //   });
   };
 
   const portfolioTotal = holdings.reduce(
