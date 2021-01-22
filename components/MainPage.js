@@ -235,7 +235,7 @@ const SubscribeUpdateForm = ({ userInfo }) => {
   };
 
   return (
-    <Grid container justify="center">
+    <Grid id="subscribe" container justify="center">
       <Grid item xs={11} sm={8}>
         <Paper
           style={{
