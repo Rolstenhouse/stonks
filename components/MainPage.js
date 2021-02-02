@@ -150,7 +150,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
           <TableHead>
             <TableRow>
               {[
-                { id: "verified", title: "Verified  },
+                { id: "verified", title: "Verified"  },
                 { id: "ticker_symbol", title: "Ticker" },
                 { id: "name", title: "Name" },
                 {
