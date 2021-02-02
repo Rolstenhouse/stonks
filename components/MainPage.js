@@ -150,7 +150,7 @@ const HoldingsTable = ({ holdings, showAmounts }) => {
           <TableHead>
             <TableRow>
               {[
-                { id: "verified" },
+                { id: "verified", title: "Total percentage return"  },
                 { id: "ticker_symbol", title: "Ticker" },
                 { id: "name", title: "Name" },
                 {
@@ -333,7 +333,7 @@ const TradesTable = ({ trades, showAmounts, portfolioTotal }) => {
           <TableHead>
             <TableRow>
               {[
-                "",
+                "Verified",
                 "Date",
                 "Ticker",
                 "Type",
